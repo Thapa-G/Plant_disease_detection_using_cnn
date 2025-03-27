@@ -181,21 +181,26 @@ def UserImagesView(request):
 #     return JsonResponse({'images': image_urls})
 
 def get_processing_images(request):
-    image_folder = os.path.join(settings.MEDIA_ROOT, 'image_outputs')  # Path to images
-    
+    # Define the folder path where images are stored
+    image_folder = os.path.join(settings.MEDIA_ROOT, 'image_outputs')
+
+    # If the folder does not exist, return an empty response
     if not os.path.exists(image_folder):
-        return JsonResponse({'images': []})  # Return empty if no images exist
-    image_files = sorted(os.listdir(image_folder), reverse=True)  # Get latest images first
-    # Create a list of dictionaries containing the image URL and its name
+        return JsonResponse({'images': []})
+
+    # Get all image files sorted by latest first
+    image_files = sorted(os.listdir(image_folder), reverse=True)
+
+    # Construct the full URLs for each image
     image_urls = [
         {
-            'url': settings.MEDIA_URL + 'image_outputs/' + img,
+            'url': f"{settings.MEDIA_URL}image_outputs/{img}",
             'name': img
         }
         for img in image_files
     ]
-    return JsonResponse({'images': image_urls})
 
+    return JsonResponse({'images': image_urls})
 
 
 @api_view(['GET'])
@@ -222,15 +227,9 @@ def train_model(request):
         learning_rate = form_data.get('learningRate')
         gamma = form_data.get('gamma')
         num_epochs = form_data.get('numEpochs')
-
-        print(kernel_size, stride, learning_rate, gamma, num_epochs)
-        # Prepare dataset
-
         print("Data_set is being prepared")
-
         csv_file = r"C:\Users\AASHIK\Desktop\Plant_Disease_project\Backend\myproject\app\training_data\train1_augumanted_3000.csv" # Replace with the actual CSV file path
         dataset = CustomImageDataset(csv_file=csv_file, image_size=(128, 128))
-        
         df = pd.read_csv(csv_file)
         labels = df['Label']
 

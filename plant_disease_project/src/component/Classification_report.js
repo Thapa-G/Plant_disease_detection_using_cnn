@@ -31,13 +31,10 @@ const Report = () => {
   if (error) return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
   if (!metrics) return <p style={{ textAlign: 'center' }}>No data available</p>;
 
-  // Extract last values for Recall, Precision, and F1-score
-                    //   condition ? true(task): false(false)
   const lastRecall = metrics.recalls ? metrics.recalls[metrics.recalls.length - 1].toFixed(3) : 'N/A';
   const lastPrecision = metrics.precisions ? metrics.precisions[metrics.precisions.length - 1].toFixed(3): 'N/A';
   const lastF1Score = metrics.f1_scores ? metrics.f1_scores[metrics.f1_scores.length - 1] .toFixed(3) : 'N/A';
 
-  // Generate Loss Data
   const lossData = {
     labels: metrics.train_losses.map((_, index) => `Epoch ${index + 1}`),
     datasets: [
@@ -46,7 +43,6 @@ const Report = () => {
     ]
   };
 
-  // Generate Accuracy Data
   const accuracyData = {
     labels: metrics.val_accuracies.map((_, index) => `Epoch ${index + 1}`),
     datasets: [
@@ -59,6 +55,11 @@ const Report = () => {
     maintainAspectRatio: false
   };
 
+  // Extract the latest confusion matrix
+  const lastConfusionMatrix = metrics.confusion_matrices && metrics.confusion_matrices.length > 0
+    ? metrics.confusion_matrices[metrics.confusion_matrices.length - 1]
+    : null;
+
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h1 style={{ textAlign: 'center', color: '#333' }}>Training Metrics Report</h1>
@@ -70,7 +71,6 @@ const Report = () => {
         <p><strong>F1 Score:</strong> {lastF1Score}</p>
       </div>
 
-      {/* Loss Curve */}
       <div style={{ width: '500px', margin: '20px auto' }}>
         <h2 style={{ color: '#E44D26' }}>Loss Curve</h2>
         <div style={{ height: '300px' }}>
@@ -78,13 +78,41 @@ const Report = () => {
         </div>
       </div>
 
-      {/* Accuracy Curve */}
       <div style={{ width:'500px', margin: '20px auto' }}>
         <h2 style={{ color: '#4CAF50' }}>Accuracy Curve</h2>
         <div style={{ height: '300px' }}>
           <Line data={accuracyData} options={chartOptions} />
         </div>
       </div>
+
+      {/* Confusion Matrix Display */}
+      {lastConfusionMatrix && (
+        <div style={{ textAlign: 'center', marginTop: '30px' }}>
+          <h2 style={{ color: '#333' }}>Confusion Matrix</h2>
+          <table border="1" style={{ margin: 'auto', borderCollapse: 'collapse', fontSize: '18px' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '10px', border: '1px solid black' }}>Actual \ Predicted</th>
+                {lastConfusionMatrix[0].map((_, index) => (
+                  <th key={`col-${index}`} style={{ padding: '10px', border: '1px solid black' }}>P{index}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {lastConfusionMatrix.map((row, rowIndex) => (
+                <tr key={`row-${rowIndex}`}>
+                  <th style={{ padding: '10px', border: '1px solid black' }}>A{rowIndex}</th>
+                  {row.map((value, colIndex) => (
+                    <td key={`cell-${rowIndex}-${colIndex}`} style={{ padding: '10px', textAlign: 'center', border: '1px solid black' }}>
+                      {value}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

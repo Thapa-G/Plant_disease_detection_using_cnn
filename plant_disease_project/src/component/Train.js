@@ -34,7 +34,7 @@ const Train = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    alert("Donot change tab while training.");
     try {
       // Prepare the data to send to the backend
       const formDataToSend = {
@@ -151,12 +151,12 @@ const Train = () => {
               {trainingResults.epoch.map((epoch, index) => (
                 <tr key={index}>
                   <td className="px-4 py-2 border">{epoch}</td>
-                  <td className="px-4 py-2 border">{trainingResults.train_loss[index]}</td>
-                  <td className="px-4 py-2 border">{trainingResults.val_loss[index]}</td>
-                  <td className="px-4 py-2 border">{trainingResults.accuracy[index]}</td>
-                  <td className="px-4 py-2 border">{trainingResults.precision[index]}</td>
-                  <td className="px-4 py-2 border">{trainingResults.recall[index]}</td>
-                  <td className="px-4 py-2 border">{trainingResults.f1_score[index]}</td>
+                  <td className="px-4 py-2 border">{trainingResults.train_loss[index].toFixed(4)}</td>
+                  <td className="px-4 py-2 border">{trainingResults.val_loss[index].toFixed(4)}</td>
+                  <td className="px-4 py-2 border">{trainingResults.accuracy[index].toFixed(4)}</td>
+                  <td className="px-4 py-2 border">{trainingResults.precision[index].toFixed(4)}</td>
+                  <td className="px-4 py-2 border">{trainingResults.recall[index].toFixed(4)}</td>
+                  <td className="px-4 py-2 border">{trainingResults.f1_score[index].toFixed(4)}</td>
                 </tr>
               ))}
             </tbody>
